@@ -1,0 +1,11 @@
+Please follow the rules to apply gmx email account
+First Name: Pinter
+Last Name: Rest
+Address: pinterestapi + 一个整数（不以0开头）， 例如pinterestapi1
+Password: Pinterest@api123
+
+申请完以后的信息截个图，图片名存为email address
+
+我来申1-10
+雅各布11-20
+萨莫尔21-30
