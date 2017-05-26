@@ -16,7 +16,7 @@ import re
 import ast
 
 def save_as_txt(jsonList, path):
-	with open(path, 'w') as outfile:
+	with open(path, 'a') as outfile:
 		for line in jsonList:
 			outfile.write(str(line) + '\n')
 
@@ -91,35 +91,36 @@ def pin_scrp(url, label):
 			pins.append(jsonStr)
 	return pins
 
-def board_scrp(url):
+def board_scrp(id):
+	url = 'http://www.pinterest.com/pin/' + id + '/repins'
 	list = generate_soup_list(url)
-	boards = []
+	users = '["'
 	for a in list:
 		if re.match(r'^/', a['href']) and len(a['href'])>4:
-			boards.append(a['href'])
-	return boards
+			userID = a['href'].lstrip('/').rstrip('/').split('/')[0]
+			users = users + userID + '", "'
+	users = users.rstrip(', "') + ']'
+	return users
 
 if __name__ == '__main__':
 	pinLabel = ['diy']
 # , 'makeover', 'ideas', 'grey', 'living%20room', 'design',\
 # 		'repurposed', 'pallet', 'modern', 'bedroom', 'unique', 'rustic', 'patio',\
 # 		'outdoor', 'vintage', 'industrial', 'wood', 'refinishing'
-	for label in pinLabel:
-		l = re.sub('%20','',label)
-		url = 'https://www.pinterest.com/search/pins/?q=furniture%20' + label
-		pins= pin_scrp(url, l)
-		save_as_txt(pins, '/Users/jacob/Desktop/Python/Pinterest/pinID/' + l + '_ids.txt')
+	# for label in pinLabel:
+	# 	l = re.sub('%20','',label)
+	# 	url = 'https://www.pinterest.com/search/pins/?q=furniture%20' + label
+	# 	pins= pin_scrp(url, l)
+	# 	save_as_txt(pins, '/Users/jacob/Desktop/Python/Pinterest/source_ids.txt')
 
-		# infile = open('/Users/jacob/Desktop/Python/Pinterest/pinIDs/' + l + '_ids.txt')
-		# pins = infile.readlines()
-		# infile.close()
-		# repins = {}
-		# for pin in pins:
-		# 	for key in ast.literal_eval(pin):
-		# 		id = key
-		# 	boards = board_scrp('http://www.pinterest.com/pin/' + id + '/repins')
-		# 	repins.update({id: []})
-		# 	for board in boards:
-		# 		repins.setdefault(id,[]).append(board)
-		# with open('/Users/jacob/Desktop/Python/Pinterest/repins/' + l + '_repins.txt') as f:
-		# 	f.write(str(repins))
+	infile = open('/Users/jacob/Desktop/Python/Pinterest/source_ids.txt')
+	pins = infile.readlines()
+	infile.close()
+
+	repin_users = []
+	for line in pins:
+		jObj = json.loads(line)
+		pinID = jObj['pinID']
+		pair = '{"' + pinID + '": ' + board_scrp(pinID) + '}'
+		repin_users.append(pair)
+	save_as_txt(repin_users, '/Users/jacob/Desktop/Python/Pinterest/repin_users.txt')
