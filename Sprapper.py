@@ -21,7 +21,8 @@ def save_as_txt(jsonList, path):
 			outfile.write(str(line) + '\n')
 
 def generate_soup_list(url):
-	driver = webdriver.Chrome('/Users/jacob/chromedriver')
+	# driver = webdriver.Chrome('/Users/jacob/chromedriver')
+	driver = webdriver.Chrome('D:/Workplace/chromedriver')
 	driver.get(url)
 	last_height = driver.execute_script("return document.body.scrollHeight")
 	list = []
@@ -168,7 +169,8 @@ if __name__ == '__main__':
 # 		p = list(set(pins))
 # 		save_as_txt(p, '/Users/jacob/Desktop/Python/Pinterest/source_ids2.txt')
 
-	infile = open('/Users/jacob/Desktop/Python/Pinterest/source_ids2.txt')
+	# infile = open('/Users/jacob/Desktop/Python/Pinterest/source_ids2.txt')
+	infile = open('D:/Workplace/source_ids2.txt')
 	pins = infile.readlines()
 	infile.close()
 
@@ -178,4 +180,5 @@ if __name__ == '__main__':
 		pinID = jObj['pinID']
 		pair = '{"pinID": "' + pinID + '", "users": ' + board_scrp(pinID) + '}'
 		repin_users.append(pair)
-	save_as_txt(repin_users, '/Users/jacob/Desktop/Python/Pinterest/repin_users.txt')
+	# save_as_txt(repin_users, '/Users/jacob/Desktop/Python/Pinterest/repin_users.txt')
+	save_as_txt(repin_users, 'D:/Workplace/repin_users.txt')
