@@ -26,8 +26,11 @@ def generate_soup_list(url):
 	last_height = driver.execute_script("return document.body.scrollHeight")
 	list = []
 	while True:
-		driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-		time.sleep(4)
+		try:
+			driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+			time.sleep(4)
+		except:
+			continue
 		new_height = driver.execute_script("return document.body.scrollHeight")
 		if new_height == last_height:
 			break
@@ -42,7 +45,27 @@ def generate_soup_list(url):
 
 def pin_scrp(url, label):
 	token_index = 0
-	token = ['Ab3z582fFq-UJGi7J8cq3sCy-LC4FMIG2wMcBa1ECeVcNcAo5QAAAAA',
+	token = ['Afz32BRh8gNvTk-kLK_8XlvzbuNIFMMv_bRRVKtEDFR_pSBBMwAAAAA',
+				'AddzTdtGlkXHm5lK7aVqx94TBKZHFMMwDoaS4etEDFSitkA3owAAAAA',
+				'Aan1IEOgH47TgvEtGXODh57yc1bdFMMwHIAXq8xEDFTAF0AswgAAAAA',
+				'Ab-gP7-2LCoqghJbF6UxmeYHthKoFMMwKe8kQdVEDFTca6A4pwAAAAA',
+				'AfK9cdnzwzVBUS638Wj_alpY6ERSFMMwN-nuf4VEDFT5tMApvQAAAAA',
+				'AUzaKCx95hV3-atoA5ckeFcXP4m3FMMwR8coDVZEDFUa8oAqmwAAAAA',
+				'ATj09G6hf_bVieT1Hs-Ar1xfIixOFMMwXl5OOy9EDFVKKoA--QAAAAA',
+				'AafJZm0-fDBn5SIdgjX18aDxv2VpFMMwaTlCtEJEDFVhFaA6ugAAAAA',
+				'ATqraQmLhZ8qHoDyFO1I1G1Qh57CFMMwcZw7uPdEDFVyqUA61AAAAAA',
+				'AaksVMGlb1cwB00fw1j-QALPzI-dFMMweiK9L6FEDFWEn0AoLgAAAAA',
+				'AelGfWVWzfBiKUOHYbvcmXPIZiL7FMMwgYUPGA5EDFWUGUA4rwAAAAA',
+				'AU2dWLD3V2U5qAvCr3a2JPTPKHCwFMMwi_garx5EDFWp5KA0lwAAAAA',
+				'AdCZjVrf81WfBV312gRlDtsmO3b6FMMwk_0Emt5EDFW6zuApVQAAAAA',
+				'AbxLUGnpaB9ctrYw1eOQz44WT0t_FMMwm0XW1wtEDFXJ2IBH-QAAAAA',
+				'AWgNMKUQl5s6I2FxbhPhrVmkpx1mFMMwpFF0CVZEDFXc-iA7TQAAAAA',
+				'AZB-ORxXpd8CiuGlUnP3_nfNHAq2FMMwrSZNz41EDFXvmcAoXgAAAAA',
+				'AR9RJuSGRT1IBWOhUcKSHrwKShVAFMMws9scjwFEDFX9f8AtgwAAAAA',
+				'AVhDP76IYvJUkyxpZXiAAbP8VGPEFMMwveRzrC5EDFYSdEAv5wAAAAA',
+				'AYbUQ8UfHmxALLGWoM038ySrf5ztFMMwxQKjOfBEDFYhe6At3AAAAAA',
+				'AfivjwA4ylwzMv0utM_5BR4SXfsCFMMwzdGT-QVEDFYz2yA27QAAAAA',
+				'Ab3z582fFq-UJGi7J8cq3sCy-LC4FMIG2wMcBa1ECeVcNcAo5QAAAAA',
 				'Ae4SFazCrOXR-Ty1HryemIQVoIuhFMIG7hnbsnVECeWEAMBEkgAAAAA',
 				'AbQZu3nqOMPLl6Mk2CfDHc_T9wgwFMIJcAywAFtECerGFSA2bwAAAAA',
 				'ASfGLgfv3UG5PwpYvh18f4vkNWddFMIJhcbZzaZECerzmYA-rgAAAAA',
@@ -63,7 +86,27 @@ def pin_scrp(url, label):
 				'AYidnj6716_1HcgttS0inYrTK8k8FMIGZmtFF6NECeRnTeBGzgAAAAA',
 				'AZHSp0gpAUVXZryrhWFCCPxrS5CEFMIGjZA3p6lECeS5tcAx1wAAAAA',
 				'AUxhDuK1u2-O-5FGC5z7LHd5cdX1FMIGtKJXeK1ECeULsSAxUAAAAAA',
-				'AU2BMJxwTSq5c-aQ1AahI2wsGOuGFMIGx-2ZWZNECeU0BmA7LAAAAAA']
+				'AU2BMJxwTSq5c-aQ1AahI2wsGOuGFMIGx-2ZWZNECeU0BmA7LAAAAAA',
+				'Ad5ijnA3hBRb7daeiHP22mDtb4HHFMN4_Yita_lEB_x18aAu5wAAAAA',
+				'AQYCTmkcnT_hLexiwV7pYMJaXcczFMN5QEGYxBhEDO4inCA-WQAAAAA',
+				'AaOzR1MG8tWr81SgVLXofqyEvb58FMN5q9HR-29EDO8EL4BF_QAAAAA',
+				'AWAvX9EbhkAqcVaoTuGLrDaC1VYqFMN5-Ko22IVEDO-lb8BDKgAAAAA',
+				'AVb3430LMe0Rfs4PaBtPReKPtJ-OFMN6iNy2vUtEDPAO36A_5gAAAAA',
+				'AYsd4nyxPSdD8XSgQKfNuZFLRVKWFMN6s8vmXBJEDPEt70Ax0QAAAAA',
+				'AVplmT5y2eFb9hLWqoEdCF-NtE1mFMN66I5FCllEDPGcd6A0qQAAAAA',
+				'AbJ64ZlcPIHc0PzIiB-LjlNdSSilFMN7BAXBKixEDPHWCwBFNQAAAAA',
+				'Af-6RjNfet5d3Vx9j24Hc9DJ4ba4FMN7G_cWLQVEDPIIbeBA4QAAAAA',
+				'AWBsBHGuKSedkNtvM9jHOlrpUA1PFMN7PHvnEy5EDPJMpWBAhQAAAAA',
+				'AXF6GUDPEjzN20jzxDQBBWP3INpGFMN7UxaqMWtEDPJ79yA6yAAAAAA',
+				'AcqGgj_KPDcvffNEnt8LmoQLQpwTFMN7bv0pSzVEDPK2fUBCKQAAAAA',
+				'AYLAjX9w_g6ifdCgbkPIoE2M34I3FMN7gpPe1LVEDPLfqUA4AgAAAAA',
+				'ATEkKCj6IMbA8TBv2k4uViNLZiI7FMN7l9l2Z7VEDPML-2BHfQAAAAA',
+				'ARZ-5IBj2dgSc3jdVtI3E8admpTkFMN7qas3ppdEDPMxiKAykQAAAAA',
+				'AeHqUmGn-QdS_HUPvFgwzBcXEkAeFMN7uoRX6wtEDPNUhuA_YwAAAAA',
+				'AYEKm0mMtIvnV30QnnjIeFCXrw5iFMN7zv1iZjZEDPN_o6A-iwAAAAA',
+				'ATcmTR26iIsnDeT9srHrGuf25F8oFMONVvn8RbNEDRhDlCA2hQAAAAA',
+				'AQkrfiAklRilskyDwTVTK-3TXcfFFMONYyY9vCVEDRhdYyBAuQAAAAA',
+				'AZBd_S6vs5imGHIuP-wL6aOFni7jFMONa5mIb55EDRhuzuBGrQAAAAA']
 	list = generate_soup_list(url)
 	pins = []
 	for a in list:
@@ -79,9 +122,12 @@ def pin_scrp(url, label):
 				else:
 					token_index += 1
 
-			tstpStr = json.loads(response)['data']['created_at']
+			try:
+				tstpStr = json.loads(response)['data']['created_at']
+			except:
+				continue
 			tstp = datetime.strptime(tstpStr, '%Y-%m-%dT%H:%M:%S')
-			if datetime.now() - tstp > timedelta(days=60):
+			if tstp < datetime(year=2017, month=3, day=1) or tstp >= datetime(year=2017, month=6, day=1):
 				continue
 
 			img_url = a.img['src']
@@ -99,21 +145,30 @@ def board_scrp(id):
 		if re.match(r'^/', a['href']) and len(a['href'])>4:
 			userID = a['href'].lstrip('/').rstrip('/').split('/')[0]
 			users = users + userID + '", "'
-	users = users.rstrip(', "') + ']'
+	users = users.rstrip(', "') + '"]'
 	return users
 
 if __name__ == '__main__':
-	pinLabel = ['diy']
-# , 'makeover', 'ideas', 'grey', 'living%20room', 'design',\
+	pinLabel = ['redo', 'restoration', 'upcycled', 'black']
+# 'diy', 'makeover', 'ideas', 'grey', 'living%20room', 'design',\
 # 		'repurposed', 'pallet', 'modern', 'bedroom', 'unique', 'rustic', 'patio',\
-# 		'outdoor', 'vintage', 'industrial', 'wood', 'refinishing'
-	# for label in pinLabel:
-	# 	l = re.sub('%20','',label)
-	# 	url = 'https://www.pinterest.com/search/pins/?q=furniture%20' + label
-	# 	pins= pin_scrp(url, l)
-	# 	save_as_txt(pins, '/Users/jacob/Desktop/Python/Pinterest/source_ids.txt')
+# 		'outdoor', 'vintage', 'industrial', 'wood', 'refinishing', 'painted',\
+# 		'cheap', 'distressed', 'arrangement', 'antique', 'redo'\
+# 		'restoration', 'upcycled', 'black', 'white', 'office', 'ashley',\
+# 		'farmhouse', 'old', 'apartment', 'cool', 'hasks', 'art%20deco',\
+# 		'recycled', 'ikea', 'decoupage', 'laminate', 'victorian', 'mirrored',\
+# 		'baby', 'cardboard', 'urban', 'scandinavian', 'retro', 'modular',\
+# 		'french', 'sofa', 'garden', 'table', 'chair', 'classic', 'store', 'logo',\
+# 		'showroom', 'luxury', 'contemporary', 'metal', 'drawing', 'blue',
+# 		'green', 'leather', 'brown', 'display' 
+# 	for label in pinLabel:
+# 		l = re.sub('%20','',label)
+# 		url = 'https://www.pinterest.com/search/pins/?q=furniture%20' + label
+# 		pins= pin_scrp(url, l)
+# 		p = list(set(pins))
+# 		save_as_txt(p, '/Users/jacob/Desktop/Python/Pinterest/source_ids2.txt')
 
-	infile = open('/Users/jacob/Desktop/Python/Pinterest/source_ids.txt')
+	infile = open('/Users/jacob/Desktop/Python/Pinterest/source_ids2.txt')
 	pins = infile.readlines()
 	infile.close()
 
@@ -121,6 +176,6 @@ if __name__ == '__main__':
 	for line in pins:
 		jObj = json.loads(line)
 		pinID = jObj['pinID']
-		pair = '{"' + pinID + '": ' + board_scrp(pinID) + '}'
+		pair = '{"pinID": "' + pinID + '", "users": ' + board_scrp(pinID) + '}'
 		repin_users.append(pair)
 	save_as_txt(repin_users, '/Users/jacob/Desktop/Python/Pinterest/repin_users.txt')
