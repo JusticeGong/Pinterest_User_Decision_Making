@@ -170,15 +170,18 @@ if __name__ == '__main__':
 # 		save_as_txt(p, '/Users/jacob/Desktop/Python/Pinterest/source_ids2.txt')
 
 	# infile = open('/Users/jacob/Desktop/Python/Pinterest/source_ids2.txt')
-	infile = open('D:/Workplace/source_ids2.txt')
+	infile = open('D:/Workplace/source_ids6712.txt')
 	pins = infile.readlines()
 	infile.close()
 
 	repin_users = []
+	n = 0
 	for line in pins:
+		n = n + 1
+		print(n)
 		jObj = json.loads(line)
 		pinID = jObj['pinID']
 		pair = '{"pinID": "' + pinID + '", "users": ' + board_scrp(pinID) + '}'
 		repin_users.append(pair)
 	# save_as_txt(repin_users, '/Users/jacob/Desktop/Python/Pinterest/repin_users.txt')
-	save_as_txt(repin_users, 'D:/Workplace/repin_users.txt')
+	save_as_txt(repin_users, 'D:/Workplace/repin_users6712.txt')
