@@ -22,7 +22,7 @@ def save_as_txt(jsonList, path):
 
 def generate_soup_list(url):
 	# driver = webdriver.Chrome('/Users/jacob/chromedriver')
-	driver = webdriver.Chrome('D:/Workplace/chromedriver')
+	driver = webdriver.Chrome('chromedriver')
 	driver.get(url)
 	last_height = driver.execute_script("return document.body.scrollHeight")
 	list = []
