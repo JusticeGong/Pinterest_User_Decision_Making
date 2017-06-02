@@ -168,7 +168,7 @@ if __name__ == '__main__':
 # 		p = list(set(pins))
 # 		save_as_txt(p, '/Users/jacob/Desktop/Python/Pinterest/source_ids2.txt')
 
-	infile = open('/Users/jacob/Desktop/Python/Pinterest/source_ids2.txt')
+	infile = open('/Users/jacob/Desktop/Python/Pinterest/source_ids3.txt')
 	pins = infile.readlines()
 	infile.close()
 
