@@ -149,26 +149,26 @@ def board_scrp(id):
 	return users
 
 if __name__ == '__main__':
-	pinLabel = ['redo', 'restoration', 'upcycled', 'black']
-# 'diy', 'makeover', 'ideas', 'grey', 'living%20room', 'design',\
-# 		'repurposed', 'pallet', 'modern', 'bedroom', 'unique', 'rustic', 'patio',\
-# 		'outdoor', 'vintage', 'industrial', 'wood', 'refinishing', 'painted',\
-# 		'cheap', 'distressed', 'arrangement', 'antique', 'redo'\
-# 		'restoration', 'upcycled', 'black', 'white', 'office', 'ashley',\
-# 		'farmhouse', 'old', 'apartment', 'cool', 'hasks', 'art%20deco',\
-# 		'recycled', 'ikea', 'decoupage', 'laminate', 'victorian', 'mirrored',\
-# 		'baby', 'cardboard', 'urban', 'scandinavian', 'retro', 'modular',\
-# 		'french', 'sofa', 'garden', 'table', 'chair', 'classic', 'store', 'logo',\
-# 		'showroom', 'luxury', 'contemporary', 'metal', 'drawing', 'blue',
-# 		'green', 'leather', 'brown', 'display' 
-# 	for label in pinLabel:
-# 		l = re.sub('%20','',label)
-# 		url = 'https://www.pinterest.com/search/pins/?q=furniture%20' + label
-# 		pins= pin_scrp(url, l)
-# 		p = list(set(pins))
-# 		save_as_txt(p, '/Users/jacob/Desktop/Python/Pinterest/source_ids2.txt')
+	pinLabel = ['diy', 'makeover', 'ideas', 'grey', 'living%20room', 'design',\
+		'repurposed', 'pallet', 'modern', 'bedroom', 'unique', 'rustic', 'patio',\
+		'outdoor', 'vintage', 'industrial', 'wood', 'refinishing', 'painted',\
+		'cheap', 'distressed', 'arrangement', 'antique', 'redo'\
+		'restoration', 'upcycled', 'black', 'white', 'office', 'ashley',\
+		'farmhouse', 'old', 'apartment', 'cool', 'hasks', 'art%20deco',\
+		'recycled', 'ikea', 'decoupage', 'laminate', 'victorian', 'mirrored',\
+		'baby', 'cardboard', 'urban', 'scandinavian', 'retro', 'modular',\
+		'french', 'sofa', 'garden', 'table', 'chair', 'classic', 'store', 'logo',\
+		'showroom', 'luxury', 'contemporary', 'metal', 'drawing', 'blue',
+		'green', 'leather', 'brown', 'display' ]
 
-	infile = open('/Users/jacob/Desktop/Python/Pinterest/source_ids3.txt')
+	for label in pinLabel:
+		l = re.sub('%20','',label)
+		url = 'https://www.pinterest.com/search/pins/?q=furniture%20' + label
+		pins= pin_scrp(url, l)
+		p = list(set(pins))
+		save_as_txt(p, '/Users/jacob/Desktop/Python/Pinterest/source_ids.txt')
+
+	infile = open('/Users/jacob/Desktop/Python/Pinterest/source_ids.txt')
 	pins = infile.readlines()
 	infile.close()
 
@@ -179,3 +179,19 @@ if __name__ == '__main__':
 		pair = '{"pinID": "' + pinID + '", "users": ' + board_scrp(pinID) + '}'
 		repin_users.append(pair)
 	save_as_txt(repin_users, '/Users/jacob/Desktop/Python/Pinterest/repin_users.txt')
+
+	sourceDF = pd.read_json('/Users/jacob/Desktop/Python/Pinterest/source_ids.txt', lines=True, encoding='utf-8')
+	sourceDF['timestamp'] = pd.to_datetime(sourceDF['timestamp'])
+	grouped = sourceDF.groupby(['pinID'])['label'].apply(list)
+	del sourceDF['label']
+	sourceDF = sourceDF.drop_duplicates()
+	sourceDF = sourceDF.join(grouped, on='pinID')
+	sourceDF.to_csv('/Users/jacob/Downloads/source_ids.txt', sep='\t', index=False)            
+	            
+	repins = pd.read_json('/Users/jacob/Desktop/Python/Pinterest/repin_users.txt',\
+	                      dtype={"pinID":str, "users":list}, lines=True, encoding='utf-8')
+	grouped = pd.DataFrame(repins.groupby(['pinID'])['users'].apply(list))
+	grouped['users'] = grouped['users'].apply(choose_longest_list)
+	grouped['pinID'] = grouped.index
+	grouped = grouped[['pinID', 'users']]
+	grouped.to_csv('/Users/jacob/Downloads/repin_users_grp.txt', sep='\t', index=False)
