@@ -1,4 +1,3 @@
-img	pinID	timestamp	label
 https://s-media-cache-ak0.pinimg.com/474x/77/2b/e4/772be42bfd9036f21f3d6f6882dc15f5.jpg	99923685465708911	2017-05-06 02:21:28	['repurposed']
 https://s-media-cache-ak0.pinimg.com/474x/2c/71/be/2c71be6922796ac81b4785bc69e118bc.jpg	597641813021905634	2017-05-04 14:04:06	['bedroom', 'industrial', 'store']
 https://s-media-cache-ak0.pinimg.com/474x/43/2e/5f/432e5f2d9897eadde29f450f16e47ece.jpg	280489883025154176	2017-05-01 20:02:48	['outdoor']
