@@ -14,7 +14,7 @@ def save_as_txt(jsonList, path):
 
 def generate_soup_list(url):
 	# driver = webdriver.Chrome('/Users/jacob/chromedriver')
-	driver = webdriver.Chrome('chromedriver')
+	driver = webdriver.Chrome('/Users/jacob/chromedriver')
 	driver.get(url)
 	last_height = driver.execute_script("return document.body.scrollHeight")
 	list = []
@@ -50,7 +50,7 @@ def board_scrp(id):
 	return users
 
 if __name__ == '__main__':
-	with open('user_list_sample.csv', 'r') as rf:
+	with open('/Users/jacob/Desktop/Python/Pinterest/Pinterest_User_Decision_Making/user_list_sample.csv', 'r') as rf:
 		for line in rf:
 			line = line.strip()
 			line = line.split(',')
