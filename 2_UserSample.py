@@ -32,5 +32,16 @@ df = df.drop_duplicates(keep='first')
 df.to_csv('user_list_distinct.csv')
 
 #Sample
-sample = df.sample(n=10000)
+sample = df.sample(n=100)
 sample.to_csv('user_list_sample.csv')
+
+# with open('user_list_sample.csv', 'r') as rf:
+# 	with open('user_list_sample.txt', 'w') as wf:
+# 		for line in rf:
+# 			line = line.strip()
+# 			line = line.split(',')
+# 			if line[1] != 'UserID':
+# 				wf.write(line[1])
+# 				wf.write('\n')
+# 		wf.close()
+# 	rf.close()
