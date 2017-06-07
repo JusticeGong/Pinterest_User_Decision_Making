@@ -32,7 +32,7 @@ df = df.drop_duplicates(keep='first')
 df.to_csv('user_list_distinct.csv')
 
 #Sample
-sample = df.sample(n=100)
+sample = df.sample(n=20000)
 sample.to_csv('user_list_sample.csv')
 
 # with open('user_list_sample.csv', 'r') as rf:

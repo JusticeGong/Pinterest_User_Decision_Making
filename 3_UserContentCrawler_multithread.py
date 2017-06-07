@@ -64,9 +64,9 @@ def reformat(list, userid):
 	return jsonlist
 
 def user_crawl(thread_num):
-	count_users = -1
+	count_users = 0
 	cmd = os.path.dirname(os.path.realpath(__file__))
-	#Define your userlist source path here
+	#Define your userlist source path here, dont forget to reomove the first line of the csv file
 	with open(os.path.join(cmd + '/user_list_sample_Jacob.csv'), 'r', encoding= 'utf8') as rf:
 		#Define you save file path here
 		with open (os.path.join(cmd + '/user_pins_' + str(thread_num) + '.txt'), 'a', encoding= 'utf8') as wf:

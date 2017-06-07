@@ -6,6 +6,8 @@ import json
 import requests
 import re
 import ast
+import os
+from multiprocessing import Pool
 
 def generate_soup_list(url):
 	##Block chrome driver to download image to speed the crawling
@@ -62,22 +64,31 @@ def reformat(list, userid):
 	# print(jsonlist)
 	return jsonlist
 
-if __name__ == '__main__':
-	count_users = -1
-	#Define your userlist source path here
-	with open('user_list_sample.csv', 'r', encoding= 'utf8') as rf:
+def user_crawl(thread_num):
+	count_users = 0
+	cmd = os.path.dirname(os.path.realpath(__file__))
+	#Define your userlist source path here, dont forget to reomove the first line of the csv file
+	with open(os.path.join(cmd + '/user_list_sample_1.csv'), 'r', encoding= 'utf8') as rf:
 		#Define you save file path here
-		with open ('user_pins.txt', 'a', encoding= 'utf8') as wf:
-			for line in rf:
+		with open (os.path.join(cmd + '/user_pins_' + str(thread_num) + '.txt'), 'a', encoding= 'utf8') as wf:
+			lines = rf.readlines()
+			#N = number of thread
+			n = 2
+			l = int(len(lines) / n)
+			lines = lines[thread_num*l+1 : (thread_num+1)*l+1]
+			for line in lines:
 				count_users = count_users + 1
 				line = line.strip()
 				line = line.split(',')
-				if line[1] != 'UserID':
-					url = 'http://www.pinterest.com/' + line[1] + '/pins/'
-					pinlist = generate_soup_list(url)
-					jsonlist = reformat(pinlist, line[1])
-					# print(souplist)
-					wf.write(jsonlist)
-					print(count_users)
+				url = 'http://www.pinterest.com/' + line[1] + '/pins/'
+				pinlist = generate_soup_list(url)
+				jsonlist = reformat(pinlist, line[1])
+				# print(souplist)
+				wf.write(jsonlist)
+				print(thread_num, count_users)
 			wf.close()
 		rf.close()
+
+if __name__ == '__main__':
+	with Pool(2) as p:
+		p.map(user_crawl, range(0,2))
