@@ -59,15 +59,17 @@ def reformat(list, userid):
 		img_src = c['src']
 		item = pinid + '\t' + userid + '\t'+ img_src + '\t' + img_alt +'\n'
 		jsonlist = jsonlist + item
-	print(jsonlist)
+	# print(jsonlist)
 	return jsonlist
 
 if __name__ == '__main__':
+	count_users = -1
 	#Define your userlist source path here
-	with open('user_list_sample.csv', 'r') as rf:
+	with open('user_list_sample.csv', 'r', encoding= 'utf8') as rf:
 		#Define you save file path here
-		with open ('user_pins.txt', 'a') as wf:
+		with open ('user_pins.txt', 'a', encoding= 'utf8') as wf:
 			for line in rf:
+				count_users = count_users + 1
 				line = line.strip()
 				line = line.split(',')
 				if line[1] != 'UserID':
@@ -76,5 +78,6 @@ if __name__ == '__main__':
 					jsonlist = reformat(pinlist, line[1])
 					# print(souplist)
 					wf.write(jsonlist)
+					print(count_users)
 			wf.close()
 		rf.close()
