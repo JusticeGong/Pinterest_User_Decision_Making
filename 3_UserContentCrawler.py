@@ -7,68 +7,74 @@ import requests
 import re
 import ast
 
-def save_as_txt(jsonList, path):
-	with open(path, 'a') as outfile:
-		for line in jsonList:
-			outfile.write(str(line) + '\n')
-
 def generate_soup_list(url):
+	##Block chrome driver to download image to speed the crawling
+	chromeOptions = webdriver.ChromeOptions()
+	prefs = {"profile.managed_default_content_settings.images": 2}
+	chromeOptions.add_experimental_option("prefs", prefs)
+
 	# driver = webdriver.Chrome('/Users/jacob/chromedriver')
-	driver = webdriver.Chrome('chromedriver')
+	driver = webdriver.Chrome('chromedriver', chrome_options=chromeOptions)
 	driver.get(url)
 	last_height = driver.execute_script("return document.body.scrollHeight")
 	list = []
 	while True:
 		try:
 			driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-			time.sleep(4)
+			#Please test if this sleep time is enough to load the webpage
+			time.sleep(1)
 		except:
 			continue
 		new_height = driver.execute_script("return document.body.scrollHeight")
 		if new_height == last_height:
 			break
 		last_height = new_height
-		html_source = driver.page_source
-		data = html_source.encode('utf-8')
+	html_source = driver.page_source
+	data = html_source.encode('utf-8')
 
-		soup = BeautifulSoup(data, 'html.parser')
-		for a in soup.find_all('a', href=True):
-			list.append(a)
+	soup = BeautifulSoup(data, 'html.parser')
+	for a in soup.find_all('a', href=True, class_="pinLink pinImageWrapper"):
+		# print(a.contents)
+		list.append(a)
+	# print(list)
 	return list
 
-
-
-def board_scrp(id):
-	url = 'http://www.pinterest.com/pin/' + id + '/repins'
-	list = generate_soup_list(url)
-	users = '["'
+def reformat(list, userid):
+	jsonlist = ''
 	for a in list:
-		if re.match(r'^/', a['href']) and len(a['href'])>4:
-			userID = a['href'].lstrip('/').rstrip('/').split('/')[0]
-			users = users + userID + '", "'
-	users = users.rstrip(', "') + '"]'
-	return users
+		#This print is for testing.
+		# print(a)
+		pinid = a['href']
+		pinid = pinid.split('/')
+		pinid = pinid[2]
+		# This print is for testing.
+		# print(pinid)
+
+		b = BeautifulSoup(str(a), "lxml")
+		b = b.find_all('img')
+		c = b[0]
+		# print(c['alt'])
+		# print(c['src'])
+		img_alt = c['alt']
+		img_src = c['src']
+		item = pinid + '\t' + userid + '\t'+ img_src + '\t' + img_alt +'\n'
+		jsonlist = jsonlist + item
+	print(jsonlist)
+	return jsonlist
 
 if __name__ == '__main__':
+	#Define your userlist source path here
 	with open('user_list_sample.csv', 'r') as rf:
-		for line in rf:
-			line = line.strip()
-			line = line.split(',')
-			if line[1] != 'UserID':
-				url = 'http://www.pinterest.com/' + line[1] + '/boards/'
-				souplist = generate_soup_list(url)
-				print(souplist)
-
-
-
-	# repin_users = []
-	# n = 0
-	# for line in pins:
-	# 	n = n + 1
-	# 	print(n)
-	# 	jObj = json.loads(line)
-	# 	pinID = jObj['pinID']
-	# 	pair = '{"pinID": "' + pinID + '", "users": ' + board_scrp(pinID) + '}'
-	# 	repin_users.append(pair)
-	# # save_as_txt(repin_users, '/Users/jacob/Desktop/Python/Pinterest/repin_users.txt')
-	# save_as_txt(repin_users, 'repin_users_GZ.txt')
+		#Define you save file path here
+		with open ('user_pins.txt', 'a') as wf:
+			for line in rf:
+				line = line.strip()
+				line = line.split(',')
+				if line[1] != 'UserID':
+					url = 'http://www.pinterest.com/' + line[1] + '/pins/'
+					pinlist = generate_soup_list(url)
+					jsonlist = reformat(pinlist, line[1])
+					# print(souplist)
+					wf.write(jsonlist)
+			wf.close()
+		rf.close()
