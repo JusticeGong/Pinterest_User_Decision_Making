@@ -24,7 +24,7 @@ def generate_soup_list(url):
 		try:
 			driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 			#Please test if this sleep time is enough to load the webpage
-			time.sleep(2)
+			time.sleep(1)
 		except:
 			continue
 		new_height = driver.execute_script("return document.body.scrollHeight")
@@ -73,7 +73,7 @@ def user_crawl(thread_num):
 		with open (os.path.join(cmd + '/user_pins_' + str(thread_num) + '.txt'), 'a', encoding= 'utf8') as wf:
 			lines = rf.readlines()
 			#N = number of thread
-			n = 3
+			n = 2
 			l = int(len(lines) / n)
 			lines = lines[thread_num*l+1 : (thread_num+1)*l+1]
 			for line in lines:
@@ -90,5 +90,5 @@ def user_crawl(thread_num):
 		rf.close()
 
 if __name__ == '__main__':
-	with Pool(3) as p:
-		p.map(user_crawl, range(0, 3))
+	with Pool(2) as p:
+		p.map(user_crawl, range(0,2))
