@@ -71,21 +71,26 @@ def user_crawl(thread_num):
 	with open(os.path.join(cmd + '/user_list_sample_1.csv'), 'r', encoding= 'utf8') as rf:
 		#Define you save file path here
 		with open (os.path.join(cmd + '/user_pins_' + str(thread_num) + '.txt'), 'a', encoding= 'utf8') as wf:
-			lines = rf.readlines()
-			#N = number of thread
-			n = 2
-			l = int(len(lines) / n)
-			lines = lines[thread_num*l+1 : (thread_num+1)*l+1]
-			for line in lines:
-				count_users = count_users + 1
-				line = line.strip()
-				line = line.split(',')
-				url = 'http://www.pinterest.com/' + line[1] + '/pins/'
-				pinlist = generate_soup_list(url)
-				jsonlist = reformat(pinlist, line[1])
-				# print(souplist)
-				wf.write(jsonlist)
-				print(thread_num, count_users)
+			with open (os.path.join(cmd + '/user_pins_exceptions.txt'), 'a', encoding= 'utf8') as ef:
+				lines = rf.readlines()
+				#N = number of thread
+				n = 2
+				l = int(len(lines) / n)
+				lines = lines[thread_num*l+1 : (thread_num+1)*l+1]
+				for line in lines:
+					count_users = count_users + 1
+					line = line.strip()
+					line = line.split(',')
+					url = 'http://www.pinterest.com/' + line[1] + '/pins/'
+					try:
+						pinlist = generate_soup_list(url)
+						jsonlist = reformat(pinlist, line[1])
+						# print(souplist)
+						wf.write(jsonlist)
+						print(thread_num, count_users)
+					except:
+						ef.write(line[1])
+						print("Exception", thread_num, count_users)
 			wf.close()
 		rf.close()
 
