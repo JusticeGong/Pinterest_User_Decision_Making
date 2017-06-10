@@ -17,6 +17,7 @@ def generate_soup_list(url):
 
 	# driver = webdriver.Chrome('/Users/jacob/chromedriver')
 	driver = webdriver.Chrome('chromedriver', chrome_options=chromeOptions)
+	driver.maximize_window()
 	driver.get(url)
 	last_height = driver.execute_script("return document.body.scrollHeight")
 	list = []
@@ -74,13 +75,14 @@ def user_crawl(thread_num):
 			with open (os.path.join(cmd + '/user_pins_exceptions.txt'), 'a', encoding= 'utf8') as ef:
 				lines = rf.readlines()
 				#N = number of thread
-				n = 2
+				n = 3
 				l = int(len(lines) / n)
 				lines = lines[thread_num*l+1 : (thread_num+1)*l+1]
 				for line in lines:
 					count_users = count_users + 1
 					line = line.strip()
 					line = line.split(',')
+					exception = line[1]
 					url = 'http://www.pinterest.com/' + line[1] + '/pins/'
 					try:
 						pinlist = generate_soup_list(url)
@@ -89,12 +91,12 @@ def user_crawl(thread_num):
 						wf.write(jsonlist)
 						print(thread_num, count_users)
 					except:
-						ef.write(line[1])
+						ef.write(exception)
 						ef.write('\n')
 						print("Exception = ", thread_num, count_users)
 			wf.close()
 		rf.close()
 
 if __name__ == '__main__':
-	with Pool(2) as p:
-		p.map(user_crawl, range(0, 2))
+	with Pool(3) as p:
+		p.map(user_crawl, range(0, 3))
