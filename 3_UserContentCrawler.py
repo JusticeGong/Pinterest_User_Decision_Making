@@ -90,7 +90,8 @@ def user_crawl(thread_num):
 						print(thread_num, count_users)
 					except:
 						ef.write(line[1])
-						print("Exception", thread_num, count_users)
+						ef.write('\n')
+						print("Exception = ", thread_num, count_users)
 			wf.close()
 		rf.close()
 
