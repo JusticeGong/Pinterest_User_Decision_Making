@@ -17,6 +17,7 @@ def generate_soup_list(url):
 
 	# driver = webdriver.Chrome('/Users/jacob/chromedriver')
 	driver = webdriver.Chrome('chromedriver', chrome_options=chromeOptions)
+	driver.maximize_window()
 	driver.get(url)
 	last_height = driver.execute_script("return document.body.scrollHeight")
 	list = []
@@ -33,62 +34,63 @@ def generate_soup_list(url):
 		last_height = new_height
 	html_source = driver.page_source
 	data = html_source.encode('utf-8')
-
+	driver.close()
 	soup = BeautifulSoup(data, 'html.parser')
-	for a in soup.find_all('a', href=True, class_="pinLink pinImageWrapper"):
-		# print(a.contents)
-		list.append(a)
+	for a in soup.find_all('a', href=True):
+		if a['href'] != "/":
+			# print(a)
+			# print(a.contents)
+			list.append(a)
 	# print(list)
 	return list
 
 def reformat(list, userid):
-	jsonlist = ''
+	followlist = ''
+	followid = []
 	for a in list:
 		#This print is for testing.
 		# print(a)
-		pinid = a['href']
-		pinid = pinid.split('/')
-		pinid = pinid[2]
+		uid = a['href']
+		uid = uid.split('/')
+		uid = uid[1]
+		# print(uid)
+		if uid != userid:
+			followid.append(uid)
 		# This print is for testing.
-		# print(pinid)
-
-		b = BeautifulSoup(str(a), "lxml")
-		b = b.find_all('img')
-		c = b[0]
-		# print(c['alt'])
-		# print(c['src'])
-		img_alt = c['alt']
-		img_src = c['src']
-		item = pinid + '\t' + userid + '\t'+ img_src + '\t' + img_alt +'\n'
-		jsonlist = jsonlist + item
-	# print(jsonlist)
-	return jsonlist
+		# print(followid)
+	followlist = userid + '\t' + str(followid) + '\n'
+	# print(followlist)
+	return followlist
 
 def user_crawl(thread_num):
 	count_users = 0
 	cmd = os.path.dirname(os.path.realpath(__file__))
-	#Define your userlist source path here, dont forget to reomove the first line of the csv file
-	with open(os.path.join(cmd + '/user_list_sample_1.csv'), 'r', encoding= 'utf8') as rf:
+	with open(os.path.join(cmd + '/user_list_sample.csv'), 'r', encoding='utf8') as rf:
 		#Define you save file path here
-		with open (os.path.join(cmd + '/user_pins_' + str(thread_num) + '.txt'), 'a', encoding= 'utf8') as wf:
-			lines = rf.readlines()
-			#N = number of thread
-			n = 2
-			l = int(len(lines) / n)
-			lines = lines[thread_num*l+1 : (thread_num+1)*l+1]
-			for line in lines:
-				count_users = count_users + 1
-				line = line.strip()
-				line = line.split(',')
-				url = 'http://www.pinterest.com/' + line[1] + '/pins/'
-				pinlist = generate_soup_list(url)
-				jsonlist = reformat(pinlist, line[1])
-				# print(souplist)
-				wf.write(jsonlist)
-				print(thread_num, count_users)
-			wf.close()
+		with open (os.path.join(cmd + '/user_followers_' + str(thread_num) + '.txt'), 'a', encoding= 'utf8') as wfer:
+			with open(os.path.join(cmd + '/user_following_' + str(thread_num) + '.txt'), 'a', encoding='utf8') as wfing:
+				lines = rf.readlines()
+				#N = number of thread
+				n = 10
+				l = int(len(lines) / n)
+				lines = lines[thread_num*l+1 : (thread_num+1)*l+1]
+				for line in lines:
+					count_users = count_users + 1
+					line = line.strip()
+					line = line.split(',')
+					followerurl = 'http://www.pinterest.com/' + line[1] + '/followers/'
+					followingurl = 'http://www.pinterest.com/' + line[1] + '/following/'
+					followersoup = generate_soup_list(followerurl)
+					followerlist = reformat(followersoup, line[1])
+					# print(followerlist)
+					wfer.write(followerlist)
+					followingsoup = generate_soup_list(followingurl)
+					followinglist = reformat(followingsoup, line[1])
+					# print(followinglist)
+					wfing.write(followinglist)
+					print(thread_num, count_users)
 		rf.close()
 
 if __name__ == '__main__':
-	with Pool(2) as p:
-		p.map(user_crawl, range(0,2))
+	with Pool(10) as p:
+		p.map(user_crawl, range(0, 10))
