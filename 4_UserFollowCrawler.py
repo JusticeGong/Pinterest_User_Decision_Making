@@ -71,9 +71,10 @@ def user_crawl(thread_num):
 			with open(os.path.join(cmd + '/user_following_' + str(thread_num) + '.txt'), 'a', encoding='utf8') as wfing:
 				lines = rf.readlines()
 				#N = number of thread
-				n = 10
+				n = 4
 				l = int(len(lines) / n)
-				lines = lines[thread_num*l+1 : (thread_num+1)*l+1]
+				print(l)
+				lines = lines[thread_num*l : (thread_num+1)*l]
 				for line in lines:
 					count_users = count_users + 1
 					line = line.strip()
@@ -92,5 +93,5 @@ def user_crawl(thread_num):
 		rf.close()
 
 if __name__ == '__main__':
-	with Pool(10) as p:
-		p.map(user_crawl, range(0, 10))
+	with Pool(4) as p:
+		p.map(user_crawl, range(0, 4))

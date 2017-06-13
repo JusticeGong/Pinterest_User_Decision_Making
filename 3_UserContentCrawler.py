@@ -21,7 +21,7 @@ def generate_soup_list(url):
 	driver.get(url)
 	last_height = driver.execute_script("return document.body.scrollHeight")
 	list = []
-	while True:
+	for n in range(0,20):
 		try:
 			driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 			#Please test if this sleep time is enough to load the webpage
@@ -34,7 +34,7 @@ def generate_soup_list(url):
 		last_height = new_height
 	html_source = driver.page_source
 	data = html_source.encode('utf-8')
-
+	driver.close()
 	soup = BeautifulSoup(data, 'html.parser')
 	for a in soup.find_all('a', href=True, class_="pinLink pinImageWrapper"):
 		# print(a.contents)
@@ -58,7 +58,7 @@ def reformat(list, userid):
 		c = b[0]
 		# print(c['alt'])
 		# print(c['src'])
-		img_alt = c['alt']
+		img_alt = c['alt'].replace('\n', '')
 		img_src = c['src']
 		item = pinid + '\t' + userid + '\t'+ img_src + '\t' + img_alt +'\n'
 		jsonlist = jsonlist + item
@@ -77,7 +77,7 @@ def user_crawl(thread_num):
 				#N = number of thread
 				n = 3
 				l = int(len(lines) / n)
-				lines = lines[thread_num*l+1 : (thread_num+1)*l+1]
+				lines = lines[thread_num*l : (thread_num+1)*l]
 				for line in lines:
 					count_users = count_users + 1
 					line = line.strip()

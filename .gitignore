@@ -1,7 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 ### Example user template template
 ### Example user template
-
+Intermediate Data/
 # IntelliJ project files
 .idea
 *.iml
@@ -34,6 +34,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
