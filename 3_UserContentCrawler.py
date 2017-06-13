@@ -9,6 +9,8 @@ import ast
 import os
 from multiprocessing import Pool
 
+numofthreads = 7
+
 def generate_soup_list(url):
 	##Block chrome driver to download image to speed the crawling
 	chromeOptions = webdriver.ChromeOptions()
@@ -75,7 +77,7 @@ def user_crawl(thread_num):
 			with open (os.path.join(cmd + '/user_pins_exceptions.txt'), 'a', encoding= 'utf8') as ef:
 				lines = rf.readlines()
 				#N = number of thread
-				n = 3
+				n = numofthreads
 				l = int(len(lines) / n)
 				lines = lines[thread_num*l : (thread_num+1)*l]
 				for line in lines:
@@ -98,5 +100,5 @@ def user_crawl(thread_num):
 		rf.close()
 
 if __name__ == '__main__':
-	with Pool(3) as p:
-		p.map(user_crawl, range(0, 3))
+	with Pool(numofthreads) as p:
+		p.map(user_crawl, range(0, numofthreads))
