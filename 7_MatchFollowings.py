@@ -4,18 +4,6 @@ import json
 import requests
 from datetime import datetime
 
-def find_exiting(l):
-	intersect = list(set(l).intersection(sample_list))
-	return intersect
-
-def choose_longest_list(l):
-    longest = []
-    for i in l:
-        if len(i) > len(longest):
-            longest = i
-    return i
-
-# Trunk original image url into filename
 def trunk_img_url(url):
 	fname = url.split('/')[-1]
 	return fname
@@ -70,39 +58,29 @@ def find_timestamp(id):
 
 if __name__ == '__main__':
 	cmd = os.path.dirname(os.path.realpath(__file__))
-	df_repins = pd.read_csv(os.path.join(cmd, 'repin_users.txt'), header=0, sep='\t')
-	df_repins = pd.read_json('/Users/jacob/Desktop/Python/Pinterest/repin_users.txt',
-						   dtype={"pinID":str, "users":list}, lines=True, encoding='utf-8')
-	df_sample = pd.read_csv(os.path.join(cmd, 'user_list_20000_sample.csv'), header=None,
-							names=['index','userID'], usecols=['userID'])
-	sample_list = list(df_sample.userID)
-	df_repins['users'] = df_repins['users'].map(find_exiting)
-	grouped = pd.DataFrame(df_repins.groupby(['pinID'])['users'].apply(list))
-	grouped['users'] = grouped['users'].apply(choose_longest_list)
-	grouped['pinID'] = grouped.index
-	df_repins = grouped[['pinID', 'users']]
-	del grouped
+	df_repins = pd.read_csv(os.path.join(cmd, 'sample_repins.txt'), header=0, sep='\t')
 	
-	df = pd.DataFrame(columns=['pinID', 'user'])
-	dict_repins = df_repins.to_dict(orient='index')
-	i = 0
-	for key, value in dict_repins.items():
-		for u in value['users']:
-			temp = pd.DataFrame({'pinID':value['pinID'], 'user':u}, index=[i])
-			df = pd.concat([df, temp])
-	df_ori_pins = pd.read_csv(os.path.join(cmd, 'source_ids.txt'), header=0, sep='\t')
-	df = pd.merge(df.reset_index(), df_ori_pins.reset_index(), on=['pinID'])
-	del df['index_x']
-	del df['index_y']
-	df['img'] = df['img'].map(trunk_img_url)
+	nList = []
+	with open(os.path.join(cmd, 'sample_user_following.txt')) as f:
+		lines = f.readlines()
+		for line in lines:
+			user, followings = line.split('\t')
+			if followings == '\n':
+				continue
+			else:
+				followings = followings.rstrip('\n')
+				fList = followings.split(',')
+				for f in fList:
+					nList.append([user,f])
+	df_network = pd.DataFrame(nList, columns=['user', 'following'])
+	df_match = pd.merge(df_repins, df_network, on=['user'], how='left')
 	
-	df_user_pin = pd.read_csv(os.path.join(cmd, 'user_pins.txt'), header=None,
-						    names=['newID','user','img','discription'], sep='\t')
-	df_user_pin['img'] = df_user_pin['img'].map(trunk_img_url)
-	df = pd.merge(df, df_user_pin, on=['user','img'], how='inner')
-	
-	df['newTimestamp'] = df['newID'].map(find_timestamp)
-	df['timestamp'] = pd.to_datetime(df['timestamp'], format='%Y-%m-%d %H:%M:%S')
-	df['delta'] = df['newTimestamp'] - df['timestamp']
-
-	df.to_csv(os.path.join(cmd, 'sample_repins.txt'), index=False, header=True, sep='\t')
+	df_user_pins = pd.read_csv(os.path.join(cmd, 'user_pins.txt'), header=None,
+						    names=['fNewID','following','img','fDiscprition'], sep='\t')
+	df_user_pins['img'] = df_user_pins['img'].map(trunk_img_url)
+	df_new = pd.merge(df_match, df_user_pins, on=['following','img'], how='inner')
+	df_new['fTimeStamp'] = df_new['fNewID'].map(find_timestamp)
+	df_new['newTimestamp'] = pd.to_datetime(df_new['newTimestamp'], format='%Y-%m-%d %H:%M:%S')
+	df_new['fTimeStamp'] = pd.to_datetime(df_new['fTimeStamp'], format='%Y-%m-%d %H:%M:%S')
+	boolean = df_new['newTimestamp'] > df_new['fTimeStamp']
+	df_new = df_new.loc[boolean, :]
