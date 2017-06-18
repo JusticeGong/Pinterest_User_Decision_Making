@@ -2,12 +2,20 @@ import requests
 import os
 from multiprocessing import Pool
 
-def downloader(thread):
-	if thread == thread_num - 1:
-		temp_list = img_list[thread * trunk:]
+numofthreads = 8
+
+def downloader(thread_num):
+	cmd = os.path.dirname(os.path.realpath(__file__))
+	f = open(os.path.join(cmd, 'image_list_Zheng.txt'))
+	img_list = f.readlines()[1:]
+	f.close()
+	trunk = int(len(img_list) / numofthreads)
+	if thread_num == numofthreads - 1:
+		img_list = img_list[thread_num * trunk:]
 	else:
-		temp_list = img_list[thread * trunk : (thread+1) * trunk]
-	for line in temp_list:
+		img_list = img_list[thread_num * trunk : (thread_num+1) * trunk]
+	n = 0
+	for line in img_list:
 		user, url = line.split(',')
 		url = url.rstrip('\n')
 		img_result = requests.get(url)
@@ -15,16 +23,18 @@ def downloader(thread):
 		path = os.path.join(cmd, 'Images', user)
 		if (not os.path.exists(path)):
 			os.makedirs(path)
-		with open(os.path.join(path, filename), 'wb') as file:
-			file.write(img_result.content)
+		try:
+			with open(os.path.join(path, filename), 'wb') as file:
+				file.write(img_result.content)
+				file.close()
+		except:
+			with open('img_exceptions.txt', 'a') as file:
+				file.write(line)
+				file.close()
+		n = n + 1
+		print(thread_num, n)
 
 if __name__ == '__main__':
-	cmd = os.path.dirname(os.path.realpath(__file__))
-	f = open(os.path.join(cmd, 'image_list.txt'))
-	img_list = f.readlines()[1:]
-	f.close()
-	
-	thread_num = 6
-	trunk = int(len(img_list)/thread_num)
-	p = Pool(thread_num)
-	p.map(downloader, range(thread_num))
+	p = Pool(numofthreads)
+	p.map(downloader, range(0, numofthreads))
+
