@@ -10,6 +10,14 @@ from multiprocessing import Pool
 cwd = os.path.dirname(os.path.realpath(__file__))
 numofthreads = 8
 
+df = pd.read_csv(os.path.join(cwd, 'sample_repins_board.txt'), dtype=object, sep='\t', header=0)
+df = df[['board_id', 'board_url']]
+df['board_pin'] = np.nan
+df['board_id'] = df['board_id'].astype(str)
+
+trunk = int(df.shape[0] / numofthreads)
+print(trunk)
+
 def generate_soup_list(url):
 	##Block chrome driver to download image to speed the crawling
 	chromeOptions = webdriver.ChromeOptions()
@@ -40,16 +48,19 @@ def generate_soup_list(url):
 	list = []
 	for a in soup.find_all('a', href=True):
 		if re.match(r'^/pin/', a['href']):
+			# print(a)
 			list.append(a)
 	return list
 
 def reformat(list, board):
 	result = ''
 	for a in list:
-		pinid = a['href'].lstrip('/pin/').rstrip('/')
-
+		pinid = a['href']
+		pinid = pinid.split('/')
+		pinid = pinid[2]
 		b = BeautifulSoup(str(a), "lxml")
-		b = b.find_all('img')[0]
+		b = b.find_all('img')
+		c = b[0]
 		img_alt = c['alt'].replace('\n', '')
 		img_src = c['src']
 		item = board + '\t' + pinid + '\t'+ img_src + '\t' + img_alt +'\n'
@@ -61,34 +72,29 @@ def user_crawl(thread):
 		temp= df.iloc[thread * trunk:, :]
 	else:
 		temp = df.iloc[thread * trunk : (thread+1) * trunk, :]
-	
-	rf = open(os.path.join(cwd, 'board_pins.txt'), 'a', encoding='utf8')
-	ef = open(os.path.join(cwd, 'board_pins_exceptions.txt'), 'a', encoding= 'utf8')
+
+	rf = open(os.path.join(cwd, 'board_pins' + str(thread) + '.txt'), 'a', encoding='utf8')
+	ef = open(os.path.join(cwd, 'board_pins_exceptions' + str(thread) + '.txt'), 'a', encoding='utf8')
+	n = 0
 	for index, value in temp.iterrows():
 		try:
-			if value['board_id'] == np.nan:
+			if str(value['board_id']) == np.nan:
 				continue
 			else:
 				l = generate_soup_list(value['board_url'])
-				result = reformat(l, value['board_id'])
+				result = reformat(l, str(value['board_id']))
 				rf.write(result)
-				del result
+				# print(l)
+				# print(str(value['board_id']), l)
+				# print(result)
+			# print(result)
+			# del result
 		except:
-			ef.write(value['board_id'] + '\n')
-			print("Exception =", thread, value['board_id'])
+			ef.write(str(value['board_url']) + '\n')
+			print("Exception =", thread, str(value['board_id']))
+		n = n + 1
+		print(thread, n)
 
-	del temp['board_url']
-	return temp
-
-if __name__ == '__main__':	
-	df = pd.read_csv(os.path.join(cwd, 'sample_repins_board.txt'), sep='\t', header=0)
-	df = df[['board_id', 'board_url']]
-	df['board_pin'] = np.nan
-	df['board_id'] = df['board_id'].astype(str)
-
-	trunk = int(df.shape[0]/numofthreads)
+if __name__ == '__main__':
 	with Pool(numofthreads) as p:
 		p.map(user_crawl, range(numofthreads))
-
-	df_bp = pd.concat(df_list, axis=0)
-	df_bp.to_csv(os.path.join(cwd, 'board_pins.txt'), index=False, header=True, sep='\t')
