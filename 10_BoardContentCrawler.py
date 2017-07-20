@@ -8,7 +8,7 @@ import os
 from multiprocessing import Pool
 
 cwd = os.path.dirname(os.path.realpath(__file__))
-numofthreads = 8
+numofthreads = 6
 
 df = pd.read_csv(os.path.join(cwd, 'sample_repins_board.txt'), dtype=object, sep='\t', header=0)
 df = df[['board_id', 'board_url']]
@@ -72,9 +72,6 @@ def user_crawl(thread):
 		temp= df.iloc[thread * trunk:, :]
 	else:
 		temp = df.iloc[thread * trunk : (thread+1) * trunk, :]
-
-	rf = open(os.path.join(cwd, 'board_pins' + str(thread) + '.txt'), 'a', encoding='utf8')
-	ef = open(os.path.join(cwd, 'board_pins_exceptions' + str(thread) + '.txt'), 'a', encoding='utf8')
 	n = 0
 	for index, value in temp.iterrows():
 		try:
@@ -83,15 +80,15 @@ def user_crawl(thread):
 			else:
 				l = generate_soup_list(value['board_url'])
 				result = reformat(l, str(value['board_id']))
+				rf = open(os.path.join(cwd, 'board_pins' + str(thread) + '.txt'), 'a', encoding='utf8')
 				rf.write(result)
-				# print(l)
-				# print(str(value['board_id']), l)
-				# print(result)
-			# print(result)
-			# del result
+				rf.close()
+			del result
 		except:
+			ef = open(os.path.join(cwd, 'board_pins_exceptions' + str(thread) + '.txt'), 'a', encoding='utf8')
 			ef.write(str(value['board_url']) + '\n')
 			print("Exception =", thread, str(value['board_id']))
+			ef.close()
 		n = n + 1
 		print(thread, n)
 
