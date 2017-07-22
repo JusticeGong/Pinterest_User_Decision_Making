@@ -10,7 +10,7 @@ from multiprocessing import Pool
 cwd = os.path.dirname(os.path.realpath(__file__))
 numofthreads = 6
 
-df = pd.read_csv(os.path.join(cwd, 'sample_repins_board.txt'), dtype=object, sep='\t', header=0)
+df = pd.read_csv(os.path.join(cwd, 'sample_repins_board_1.txt'), dtype=object, sep='\t', header=0)
 df = df[['board_id', 'board_url']]
 df['board_pin'] = np.nan
 df['board_id'] = df['board_id'].astype(str)
@@ -74,6 +74,7 @@ def user_crawl(thread):
 		temp = df.iloc[thread * trunk : (thread+1) * trunk, :]
 	n = 0
 	for index, value in temp.iterrows():
+		n = n + 1
 		try:
 			if str(value['board_id']) == np.nan:
 				continue
@@ -81,7 +82,13 @@ def user_crawl(thread):
 				l = generate_soup_list(value['board_url'])
 				result = reformat(l, str(value['board_id']))
 				rf = open(os.path.join(cwd, 'board_pins' + str(thread) + '.txt'), 'a', encoding='utf8')
+				cf = open(os.path.join(cwd, 'board_pins_record' + str(thread) + '.txt'), 'a', encoding='utf8')
 				rf.write(result)
+				rec = str(thread) + '\t' + str(n)
+				print(rec)
+				cf.write(rec)
+				cf.write('\n')
+				cf.close()
 				rf.close()
 			del result
 		except:
@@ -89,8 +96,6 @@ def user_crawl(thread):
 			ef.write(str(value['board_url']) + '\n')
 			print("Exception =", thread, str(value['board_id']))
 			ef.close()
-		n = n + 1
-		print(thread, n)
 
 if __name__ == '__main__':
 	with Pool(numofthreads) as p:

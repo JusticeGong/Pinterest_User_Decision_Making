@@ -8,6 +8,7 @@ ImageSplit/
 # IntelliJ project files
 .idea
 *.iml
+Temp Data/
 out
 gen
 ### Python template
