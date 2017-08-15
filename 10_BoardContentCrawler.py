@@ -10,7 +10,7 @@ from multiprocessing import Pool
 cwd = os.path.dirname(os.path.realpath(__file__))
 numofthreads = 6
 
-df = pd.read_csv(os.path.join(cwd, 'sample_repins_board_1.txt'), dtype=object, sep='\t', header=0)
+df = pd.read_csv(os.path.join(cwd, 'sample_repins_board_2.txt'), dtype=object, sep='\t', header=0)
 df = df[['board_id', 'board_url']]
 df['board_pin'] = np.nan
 df['board_id'] = df['board_id'].astype(str)
